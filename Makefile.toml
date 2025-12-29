@@ -1,0 +1,35 @@
+[env] ## tells cargo make that we're in the context of a Cargo workspace
+CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
+
+[config] ## we want most/all of our tasks to run in the context of a workspace
+default_to_workspace = false
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+description = "Automatically format Rust code"
+
+[tasks.clean]
+command = "cargo"
+args = ["clean"]
+description = "Clean up build artifacts"
+
+[tasks.build]
+command = "cargo"
+args = ["build"]
+description = "Build the project in debug mode"
+
+[tasks.dev]
+install_crate="cargo-watch"
+cwd = "./crates/user-service/presentation"
+command = "cargo"
+args = ["watch", "-x", "run"]
+description = "Run the development server with live reloading"
+dependencies = ["format"]
+
+
+[tasks.test]
+command = "cargo"
+args = ["test"]
+description = "Run all tests for user-service"

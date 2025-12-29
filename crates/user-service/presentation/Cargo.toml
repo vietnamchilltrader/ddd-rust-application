@@ -1,0 +1,17 @@
+[package]
+name = "presentation"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { workspace = true }
+axum = { workspace = true }
+serde = { workspace = true }
+sqlx = { workspace = true }
+application = { path = "../application" }
+infrastructure = { path = "../infrastructure" }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dotenvy = { workspace = true }
+config  = { workspace = true }
