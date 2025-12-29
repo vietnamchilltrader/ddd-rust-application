@@ -2,6 +2,7 @@
 
 ```bash
 # Install Rust toolchain
+url --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup default stable
 rustup toolchain add nightly
 rustup component add clippy rustfmt
@@ -19,6 +20,7 @@ cd infra/docker_conpose
 docker compose up -d
 
 # Run migrattions
+sqlx database create
 sqlx migrate run
 
 # Run app
