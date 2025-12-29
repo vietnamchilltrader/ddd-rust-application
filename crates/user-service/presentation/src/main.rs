@@ -29,7 +29,7 @@ async fn main() -> anyhow::Result<()> {
     let conn = Arc::new(pool);
 
     let user_repo = Arc::new(PgUserRepository::new(Arc::clone(&conn)));
-    let user_service = Arc::new(UserApplicationService::new(user_repo));
+    let user_service = Arc::new(UserApplicationService::new(Arc::clone(&user_repo)));
 
     let share_state = Arc::new(AppState { user_service });
     let app = Router::new()
