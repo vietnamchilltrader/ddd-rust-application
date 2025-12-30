@@ -5,6 +5,4 @@ edition = "2024"
 
 [dependencies]
 domain = { path = "../domain" }
-anyhow = { workspace = true }
 base = { path = "../../../shared/base" }
-tracing = { workspace = true }
