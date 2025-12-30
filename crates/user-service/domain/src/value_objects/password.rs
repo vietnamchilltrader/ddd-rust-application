@@ -1,30 +1,23 @@
 use argon2::password_hash::{PasswordHash, PasswordVerifier, SaltString};
 use argon2::{Argon2, PasswordHasher};
+use base::web::error::AppError;
 use rand_core::OsRng;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Password(String);
 
-#[derive(Debug, thiserror::Error)]
-pub enum PasswordHashError {
-    #[error("Password too short (min 3 characters)")]
-    TooShort,
-    #[error("Passowrd hashing failed")]
-    HashingFailed,
-}
-
 impl Password {
     /// Create from plain password (hash it)
-    pub fn from_plain(password: &str) -> Result<Self, PasswordHashError> {
+    pub fn from_plain(password: &str) -> Result<Self, AppError> {
         if password.len() < 8 {
-            return Err(PasswordHashError::TooShort);
+            return Err(AppError::BadRequest("Password too short".into()));
         }
 
         let salt = SaltString::generate(&mut OsRng);
         let argon2 = Argon2::default();
         let hash = argon2
             .hash_password(password.as_bytes(), &salt)
-            .map_err(|_| PasswordHashError::HashingFailed)?
+            .map_err(|e| AppError::BadRequest(e.to_string()))?
             .to_string();
 
         Ok(Self(hash))
@@ -55,7 +48,7 @@ mod tests {
     #[test]
     fn test_password_too_short() {
         let result = Password::from_plain("short");
-        assert!(matches!(result, Err(PasswordHashError::TooShort)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 
     #[test]

@@ -1,7 +1,11 @@
 use crate::UserModel;
 use anyhow::Result;
 use async_trait::async_trait;
-use domain::{User, repository::UserRepositories, value_objects::UserId};
+use domain::{
+    User,
+    repository::UserRepositories,
+    value_objects::{UserId, Username},
+};
 use sqlx::PgPool;
 use std::sync::Arc;
 
@@ -27,8 +31,14 @@ impl UserRepositories for PgUserRepository {
         .bind(user_model.password)
         .bind(user_model.email)
         .execute(&*self.pool)
-        .await
-        .map_err(|e| anyhow::anyhow!("Failed to insert user: {}", e))?;
+        .await?;
         Ok(user.id)
+    }
+    async fn find_by_id(&self, username: &Username) -> Result<User> {
+        let row = sqlx::query_as::<_, UserModel>("SELECT * FROM tbl_users WHERE username = $1")
+            .bind(username.as_str())
+            .fetch_one(&*self.pool)
+            .await?;
+        Ok(User::from(row))
     }
 }

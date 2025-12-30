@@ -1,4 +1,5 @@
 use anyhow::Result;
+use base::web::error::AppError;
 use regex::Regex;
 use tracing::error;
 
@@ -6,24 +7,15 @@ use tracing::error;
 /// A validated email address.
 pub struct EmailAddress(String);
 
-#[derive(Debug, thiserror::Error)]
-/// Errors that can occur when validating an email address.
-pub enum EmailError {
-    #[error("Invalid email format")]
-    InvalidFormat,
-    #[error("Email too long (max 254 characters)")]
-    TooLong,
-}
-
 impl EmailAddress {
     /// Creates a new `EmailAddress` .
-    pub fn new(email: String) -> Result<Self, EmailError> {
+    pub fn new(email: String) -> Result<Self, AppError> {
         if email.len() > 254 {
-            return Err(EmailError::TooLong);
+            return Err(AppError::BadRequest("Email to long".into()));
         }
 
         if !Self::is_valid_email(&email) {
-            return Err(EmailError::InvalidFormat);
+            return Err(AppError::BadRequest("Invalid email format".into()));
         }
 
         // Normalize to lowercase before storing.
@@ -60,31 +52,31 @@ mod tests {
     #[test]
     fn test_invalid_email_format() {
         let result = EmailAddress::new("invalid-email".to_string());
-        assert!(matches!(result, Err(EmailError::InvalidFormat)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 
     #[test]
     fn test_missing_at_symbol() {
         let result = EmailAddress::new("invalid.email.com".to_string());
-        assert!(matches!(result, Err(EmailError::InvalidFormat)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 
     #[test]
     fn test_missing_tld() {
         let result = EmailAddress::new("user@domain".to_string());
-        assert!(matches!(result, Err(EmailError::InvalidFormat)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 
     #[test]
     fn test_email_with_spaces() {
         let result = EmailAddress::new("user @example.com".to_string());
-        assert!(matches!(result, Err(EmailError::InvalidFormat)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 
     #[test]
     fn test_email_too_long() {
         let long_email = "a".repeat(255) + "@example.com";
         let result = EmailAddress::new(long_email);
-        assert!(matches!(result, Err(EmailError::TooLong)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 }

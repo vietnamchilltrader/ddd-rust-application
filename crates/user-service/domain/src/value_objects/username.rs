@@ -1,33 +1,23 @@
-#[derive(Debug, thiserror::Error)]
-/// Errors that may occur when creating a `Username`.
-pub enum UserNameError {
-    #[error("Username too short (min 3 characters)")]
-    TooShort,
-    #[error("Username too long (max 20 characters)")]
-    TooLong,
-    #[error("Username contains invalid characters")]
-    InvalidCharacters,
-}
+use base::web::error::AppError;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-/// A validated username that follows the specified constraints.
 pub struct Username(String);
 
 impl Username {
     /// Creates a new `Username`
-    pub fn new(name: &str) -> Result<Self, UserNameError> {
+    pub fn new(name: &str) -> Result<Self, AppError> {
         let trimmed = name.trim();
         if trimmed.len() < 3 {
-            return Err(UserNameError::TooShort);
+            return Err(AppError::BadRequest("Username too short".into()));
         }
         if trimmed.len() > 20 {
-            return Err(UserNameError::TooLong);
+            return Err(AppError::BadRequest("Username too long".into()));
         }
         if !trimmed
             .chars()
             .all(|c| c.is_alphanumeric() || c == '_' || c == '-')
         {
-            return Err(UserNameError::InvalidCharacters);
+            return Err(AppError::BadRequest("Username invalid".into()));
         }
         Ok(Self(trimmed.to_string()))
     }
@@ -45,13 +35,13 @@ mod tests {
     #[test]
     fn test_username_too_short() {
         let result = Username::new("ab");
-        assert!(matches!(result, Err(UserNameError::TooShort)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 
     #[test]
     fn test_username_too_long() {
         let result = Username::new(&"a".repeat(21));
-        assert!(matches!(result, Err(UserNameError::TooLong)));
+        assert!(matches!(result, Err(AppError::BadRequest(_))));
     }
 
     #[test]
@@ -59,18 +49,9 @@ mod tests {
         let result_with_period = Username::new("invalid.user");
         let result_with_space = Username::new("invalid user");
         let result_with_special = Username::new("invalid$user");
-        assert!(matches!(
-            result_with_period,
-            Err(UserNameError::InvalidCharacters)
-        ));
-        assert!(matches!(
-            result_with_space,
-            Err(UserNameError::InvalidCharacters)
-        ));
-        assert!(matches!(
-            result_with_special,
-            Err(UserNameError::InvalidCharacters)
-        ));
+        assert!(matches!(result_with_period, Err(AppError::BadRequest(_))));
+        assert!(matches!(result_with_space, Err(AppError::BadRequest(_))));
+        assert!(matches!(result_with_special, Err(AppError::BadRequest(_))));
     }
 
     #[test]

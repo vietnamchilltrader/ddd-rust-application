@@ -26,8 +26,8 @@ async fn main() -> anyhow::Result<()> {
     let min_conn = cfg.min_connection;
     let pool = config::init_connection(&db_url, max_conn, min_conn).await?;
     info!("Connected to the database");
-    let conn = Arc::new(pool);
 
+    let conn = Arc::new(pool);
     let user_repo = Arc::new(PgUserRepository::new(Arc::clone(&conn)));
     let user_service = Arc::new(UserApplicationService::new(Arc::clone(&user_repo)));
 

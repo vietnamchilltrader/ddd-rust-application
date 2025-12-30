@@ -2,9 +2,9 @@ use std::sync::Arc;
 
 use application::commands::AddUserCommand;
 use application::user_service::UserApplicationService;
-use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
+use axum::{Json, extract::State, response::IntoResponse};
+use base::{web::error::AppError, web::response::ApiResponse};
 use infrastructure::PgUserRepository;
-use tracing::info;
 
 use crate::dto::{UserRequest, UserResponse};
 
@@ -15,7 +15,7 @@ pub struct AppState {
 pub async fn create_user_handler(
     State(app_state): State<Arc<AppState>>,
     Json(request): Json<UserRequest>,
-) -> impl IntoResponse {
+) -> Result<impl IntoResponse, AppError> {
     let command = AddUserCommand {
         username: request.username,
         password: request.password,
@@ -25,12 +25,9 @@ pub async fn create_user_handler(
         .user_service
         .create(command)
         .await
-        .map_err(|e| info!("Error creating user: {}", e))
-        .unwrap();
-
+        .map_err(|e| AppError::BadRequest(e.to_string()))?;
     let response = UserResponse {
         id: user_id.as_str().to_string(),
     };
-
-    (StatusCode::CREATED, Json(response))
+    Ok(ApiResponse::created(response))
 }

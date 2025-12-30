@@ -5,8 +5,13 @@ CREATE TABLE IF NOT EXISTS tbl_users
     username   VARCHAR(20)  NOT NULL UNIQUE,
     password   VARCHAR(254) NOT NULL,
     email      VARCHAR(254),
+    is_admin   BOOLEAN      NOT NULL DEFAULT FALSE,
+    is_deleted BOOLEAN      NOT NULL DEFAULT FALSE,
+    status     SMALLINT     NOT NULL DEFAULT 1,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ  NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    created_by VARCHAR(36) DEFAULT NULL,
+    updated_by VARCHAR(36) DEFAULT NULL
 );
 
 -- index bổ sung (optional nhưng recommended)
