@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS tbl_users
 (
     id                    uuid primary key      default uuid_generate_v7(),
-    tenant_id             uuid         not null references tbl_tenants (tenant_id) on delete cascade,
+    tenant_id             uuid         not null references tbl_tenants (id) on delete cascade,
     --Authentication
     email                 varchar(255) not null,
     password_hash         text         not null,

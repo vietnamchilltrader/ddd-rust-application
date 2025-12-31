@@ -12,6 +12,7 @@ create table tbl_tenants
     -- Status
     status          varchar(50)  not null default 'active',
     -- Audit
+    deleted_at      timestamptz,
     created_at      timestamptz  not null default now(),
     created_by      uuid,
     updated_at      timestamptz  not null default now(),
