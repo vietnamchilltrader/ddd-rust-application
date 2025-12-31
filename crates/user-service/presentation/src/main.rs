@@ -36,11 +36,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/users", post(create_user_handler))
         .with_state(share_state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
     info!(
-        "User service is running on http://{}",
-        listener.local_addr().unwrap()
+        "User service is running on https://{}",
+        listener.local_addr()?
     );
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app).await?;
     Ok(())
 }

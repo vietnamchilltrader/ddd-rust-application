@@ -12,7 +12,7 @@ members = [
     "crates/user-service/domain",
     "crates/user-service/application"
     # common lib
-    , "shared/base"]
+    , "shared/base", "shared/auth", "shared/config"]
 
 [workspace.dependencies]
 async-trait = "0.1.89"
