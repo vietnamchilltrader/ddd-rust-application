@@ -1,8 +1,7 @@
 use std::fmt;
 
 use domain::User;
-use domain::username::Username;
-use domain::value_objects::{EmailAddress, Password, UserId};
+use domain::value_objects::{EmailAddress, Password, UserId, Username};
 use sqlx::FromRow;
 
 #[derive(FromRow, Debug, Clone)]
@@ -27,8 +26,8 @@ impl From<User> for UserModel {
         Self {
             id: user.id.as_str().to_string(),
             username: user.username.as_str().to_string(),
-            password: user.password_hash.as_str().to_string(),
-            email: user.email_address.as_str().to_string(),
+            password: user.password.as_str().to_string(),
+            email: user.email.as_str().to_string(),
         }
     }
 }
@@ -41,8 +40,8 @@ impl From<UserModel> for User {
         User {
             id,
             username,
-            password_hash,
-            email_address,
+            password: password_hash,
+            email: email_address,
             audit: None,
         }
     }

@@ -1,9 +1,7 @@
-pub mod email;
-pub mod password;
-pub mod user_id;
-pub mod username;
+mod authentication;
+mod identity;
+mod profiles;
 
-pub use email::EmailAddress;
-pub use password::Password;
-pub use user_id::UserId;
-pub use username::Username;
+pub use authentication::AuthenticationInfo;
+pub use identity::UserId;
+pub use profiles::ProfileInfo;

@@ -2,7 +2,7 @@ use crate::commands::AddUserCommand;
 use base::web::error::AppError;
 use domain::repository::UserRepositories;
 use domain::{
-    User,
+    aggregate::User,
     value_objects::{EmailAddress, Password, UserId, Username},
 };
 use std::sync::Arc;

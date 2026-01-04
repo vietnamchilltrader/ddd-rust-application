@@ -14,3 +14,4 @@ serde_json = { workspace = true }
 rand_core = { workspace = true }
 tracing = { workspace = true }
 base = { path = "../../../shared/base" }
+chrono = { workspace = true }
